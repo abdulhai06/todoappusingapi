@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_api/todo.dart';
 
 class AddNewToDo extends StatefulWidget {
   const AddNewToDo({super.key});
@@ -6,16 +7,19 @@ class AddNewToDo extends StatefulWidget {
   @override
   State<AddNewToDo> createState() => _AddNewToDoState();
 }
-final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-final TextEditingController _titleTEcontroller = TextEditingController();
-final TextEditingController _descriptionTEcontroller = TextEditingController();
 
 class _AddNewToDoState extends State<AddNewToDo> {
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  final TextEditingController _titleTEcontroller = TextEditingController();
+  final TextEditingController _descriptionTEcontroller = TextEditingController();
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('add new todo'),
+        title: const Text('Add New Todo'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -28,8 +32,8 @@ class _AddNewToDoState extends State<AddNewToDo> {
               ),
               TextFormField(
                 controller: _titleTEcontroller,
-                validator: (String? value){
-                  final v=value?? '';
+                validator: (String? value) {
+                  final v = value ?? '';
                   if (v.trim().isEmpty) {
                     return 'Enter your title';
                   }
@@ -43,10 +47,10 @@ class _AddNewToDoState extends State<AddNewToDo> {
               ),
               TextFormField(
                 controller: _descriptionTEcontroller,
-                validator: (String? value){
-                  final v=value?? '';
+                validator: (String? value) {
+                  final v = value ?? '';
                   if (v.trim().isEmpty) {
-                    return 'Enter your title';
+                    return 'Enter your description';
                   }
                   return null;
                 },
@@ -59,13 +63,21 @@ class _AddNewToDoState extends State<AddNewToDo> {
                 height: 25,
               ),
               SizedBox(
-                width: MediaQuery.sizeOf(context).width,
-                child: ElevatedButton(onPressed: () {
-                  if (_formkey.currentState!.validate()) {
-                    Navigator.pop(context);
-                  }  
-                }, child: const Text('Add')),
-              )
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formkey.currentState!.validate()) {
+                      Todo todo = Todo(
+                        _titleTEcontroller.text.trim(),
+                        _descriptionTEcontroller.text.trim(),
+                        DateTime.now(),
+                      );
+                      Navigator.pop(context, todo);
+                    }
+                  },
+                  child: const Text('Add'),
+                ),
+              ),
             ],
           ),
         ),
