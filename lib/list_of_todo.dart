@@ -22,7 +22,12 @@ class _ToDoListState extends State<ToDoList> {
           'Todos',
         ),
       ),
-      body: ListView.separated(
+      body: Visibility(
+        visible: todoList.isNotEmpty,
+        replacement:  const Center(
+          child: Text('Your Todo List is Empty'),
+        ),
+        child: ListView.separated(
         itemCount: todoList.length,
         itemBuilder: (context, index) {
           return ListTile(
@@ -37,15 +42,21 @@ class _ToDoListState extends State<ToDoList> {
             trailing: Wrap(
               children: [
                 IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditNewToDo()));
+                    onPressed: () async{
+                      Todo? updatedtodo= await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>  EditNewToDo(
+                            todo: todoList[index] ,
+                          ),),);
+                      if (updatedtodo != null) {
+                        todoList[index] = updatedtodo;
+                        setState(() {});
+                      }
                     },
                     icon: const Icon(Icons.edit)),
                 IconButton(
-                    onPressed: showDeleteConfirmationDialog,
+                    onPressed: () => showDeleteConfirmationDialog(index),
                     icon: const Icon(Icons.delete)),
               ],
             ),
@@ -59,7 +70,7 @@ class _ToDoListState extends State<ToDoList> {
             endIndent: 16,
           );
         },
-      ),
+      ),),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
@@ -82,7 +93,7 @@ class _ToDoListState extends State<ToDoList> {
     }
   }
 
-  void showDeleteConfirmationDialog() {
+  void showDeleteConfirmationDialog(int index) {
     showDialog(
         context: context,
         builder: (context) {
@@ -99,8 +110,12 @@ class _ToDoListState extends State<ToDoList> {
                   child: const Text('Cancel')),
               TextButton(
                   onPressed: () {
+
                     // Perform deletion operation here
                     Navigator.pop(context);
+                    todoList.removeAt(index);
+                    setState(() {});
+
                   },
                   child: const Text(
                     'Yes',

@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:todo_api/todo.dart';
 
 class EditNewToDo extends StatefulWidget {
-  const EditNewToDo({super.key});
+  const EditNewToDo({super.key, required this.todo});
+
+  final Todo todo;
 
   @override
   State<EditNewToDo> createState() => _EditNewToDoState();
 }
-final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-final TextEditingController _titleTEcontroller = TextEditingController();
-final TextEditingController _descriptionTEcontroller = TextEditingController();
+
 class _EditNewToDoState extends State<EditNewToDo> {
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  final TextEditingController _titleTEcontroller = TextEditingController();
+  final TextEditingController _descriptionTEcontroller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleTEcontroller.text = widget.todo.title;
+    _descriptionTEcontroller.text = widget.todo.description;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,9 +39,11 @@ class _EditNewToDoState extends State<EditNewToDo> {
               ),
               TextFormField(
                 controller: _titleTEcontroller,
-                validator: (String? value){
-                  final v=value?? '';
-                  if (v.trim().isEmpty) {
+                validator: (String? value) {
+                  final v = value ?? '';
+                  if (v
+                      .trim()
+                      .isEmpty) {
                     return 'Enter your title';
                   }
                   return null;
@@ -42,9 +56,11 @@ class _EditNewToDoState extends State<EditNewToDo> {
               ),
               TextFormField(
                 controller: _descriptionTEcontroller,
-                validator: (String? value){
-                  final v=value?? '';
-                  if (v.trim().isEmpty) {
+                validator: (String? value) {
+                  final v = value ?? '';
+                  if (v
+                      .trim()
+                      .isEmpty) {
                     return 'Enter your title';
                   }
                   return null;
@@ -58,11 +74,16 @@ class _EditNewToDoState extends State<EditNewToDo> {
                 height: 25,
               ),
               SizedBox(
-                width: MediaQuery.sizeOf(context).width,
+                width: MediaQuery
+                    .sizeOf(context)
+                    .width,
                 child: ElevatedButton(onPressed: () {
                   if (_formkey.currentState!.validate()) {
-                    Navigator.pop(context);
-                  }  
+                    Todo todo = Todo(
+                        _titleTEcontroller.text, _descriptionTEcontroller.text,
+                        DateTime.now());
+                    Navigator.pop(context, todo);
+                  }
                 }, child: const Text('Update')),
               )
             ],
@@ -71,10 +92,11 @@ class _EditNewToDoState extends State<EditNewToDo> {
       ),
     );
   }
+
   @override
   void dispose() {
+    super.dispose();
     _titleTEcontroller.dispose();
     _descriptionTEcontroller.dispose();
-    super.dispose();
   }
 }
